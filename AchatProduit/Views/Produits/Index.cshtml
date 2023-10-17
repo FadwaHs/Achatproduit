@@ -1,0 +1,64 @@
+﻿@model IEnumerable<AchatProduit.Models.Produit>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container">
+
+    <form asp-controller="Produits" asp-action="Index" method="get">
+
+
+        <div>
+            <label for="CategoryFilter">Filter:</label>
+            <select id="CategoryFilter" name="CategoryFilter">
+                <option value="">All Categories</option>
+                @foreach (var category in ViewData["Categories"] as List<string>)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+            <br />
+            <br />
+            <p>
+                Title: <input type="text" name="SearchString" />
+                <input type="submit" value="Filter" />
+            </p>
+        </div>
+    </form>
+
+
+
+    <h1>Produit List</h1>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <hr />
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <img src="~/img/@item.Image" class="card-img-top" alt="Product Image" style=" max-width: 250px; max-height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">
+                            <strong>Price:</strong> $@item.Price
+                            <br />
+                            <strong>Quantity:</strong> @item.Quantity
+                            <br />
+                            <strong>Description:</strong> @item.Description
+                            <br />
+                            <strong>Category :</strong> @item.CategoryID
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-action="Details" asp-route-id="@item.ProductID" class="btn btn-warning">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.ProductID" class="btn btn-info">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.ProductID" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+ 
