@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AchatProduit.Data;
 using AchatProduit.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AchatProduit.Controllers
 {
+    [Authorize]
     public class ProduitsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -35,12 +37,16 @@ namespace AchatProduit.Controllers
         {
             if (_context.Produits == null)
             {
-                return Problem("Entity set is null.");
+                return Problem("Entity in Null ");
             }
 
             var produits = from p in _context.Produits
                            join c in _context.Categories on p.CategoryID equals c.CategoryID
-                           select new { Product = p, CategoryName = c.Name };
+                           select new ProduitViewModel
+                           {
+                               Product = p,
+                               CategoryName = c.Name
+                           };
 
             if (!string.IsNullOrEmpty(SearchString))
             {
@@ -52,10 +58,8 @@ namespace AchatProduit.Controllers
                 produits = produits.Where(item => item.CategoryName == CategoryFilter);
             }
 
-            // Return a list of products (Product) instead of an anonymous type
-            var productList = produits.Select(item => item.Product).ToList();
+            var productList = produits.ToList(); // Convert to a list
 
-            // Populate a list of categories for the filter dropdown
             var categories = _context.Categories.Select(c => c.Name).Distinct().ToList();
             ViewData["Categories"] = categories;
 
@@ -190,6 +194,62 @@ namespace AchatProduit.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
+        // Action method to add a product to the cart
+        public IActionResult AddToCart(int productId, int quantity)
+        {
+            // Get the product from the database
+            var product = _context.Produits.FirstOrDefault(p => p.ProductID == productId);
+            if (product == null)
+            {
+                // Handle the case where the product is not found
+                return NotFound();
+            }
+
+            // Check if the cart exists for the current user (you might need to implement user authentication)
+            var cart = _context.Paniers.Include(p => p.Items).FirstOrDefault();
+            if (cart == null)
+            {
+                // If the cart doesn't exist, create a new one
+                cart = new Panier();
+                _context.Paniers.Add(cart);
+                _context.SaveChanges(); // Save changes to get the new cart's ID
+            }
+
+            // Use the AddToPanier method to add the product to the cart
+            cart.AddToPanier(product, quantity);
+
+            // Explicitly load the related Items collection
+            _context.Entry(cart).Collection(p => p.Items).Load();
+
+
+            // Log or use breakpoints to inspect the state of the cart and items
+            Console.WriteLine($"Cart ID: {cart.PanierID}, Items Count: {cart.Items.Count}");
+
+            _context.SaveChanges(); // Save changes to update the cart
+
+            return RedirectToAction("Index", "Paniers");
+        }
+
+        public IActionResult RemoveFromCart(int productId)
+        {
+            var cart = _context.Paniers.Include(p => p.Items).FirstOrDefault();
+
+            if (cart != null)
+            {
+                // Call the RemoveFromPanier method to remove the product
+                cart.RemoveFromPanier(productId);
+                _context.SaveChanges(); // Save changes to update the cart
+            }
+
+            return RedirectToAction("Index", "Paniers");
+        }
+
+
+
+
+
 
         private bool ProduitExists(int id)
         {

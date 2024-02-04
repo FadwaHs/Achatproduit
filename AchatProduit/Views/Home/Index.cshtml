@@ -2,7 +2,36 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    /* Custom styles for the welcome page */
+    body {
+        background-color: #f8f9fa; /* Bootstrap light background color */
+    }
+
+    .welcome-container {
+        max-width: 600px;
+        margin: 10% auto;
+        padding: 30px;
+        text-align: center;
+        background-color: #ffffff; /* White background color */
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft box shadow */
+    }
+
+    .display-heading {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: #007bff; /* Bootstrap primary color */
+    }
+
+    .user-id {
+        font-size: 1.2rem;
+        margin-top: 20px;
+        color: #6c757d; /* Bootstrap secondary color */
+    }
+</style>
+
+<div class="welcome-container">
+    <h1 class="display-heading">Welcome</h1>
+    <p class="user-id">User ID: <strong>@ViewData["UserID"]</strong></p>
 </div>

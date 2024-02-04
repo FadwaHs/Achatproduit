@@ -1,0 +1,42 @@
+﻿@foreach (var cart in Model)
+{
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="background-color: #b9c3c3; color: #fff; padding: 10px; border-radius: 5px; margin: 0;">
+            Shopping Cart Total Price: $@cart.TotalPrice for  @(cart.Items?.Count ?? 0) Items
+        </h3>
+        <a asp-action="Delete" asp-route-id="@cart.PanierID" class="btn btn-outline-danger">Delete This Panier</a>
+    </div><br /><br />
+
+    <div class="row">
+        @if (cart.Items != null)
+        {
+            @foreach (var item in cart.Items)
+            {
+                <div class="col-md-4" style="margin-bottom: 15px;">
+                    <div class="card" style="border: 1px solid #ddd; border-radius: 15px;">
+                        <img src="~/img/@item.Product.Image" class="card-img-top" alt="Product Image" style="max-width: 100%; max-height: 150px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-size: 1.25rem; font-weight: bold; margin-bottom: 10px;">@item.Product.Name</h5>
+                            <p class="card-text">
+                                <strong>Description:</strong> @item.Product.Description<br />
+                                <strong>Price:</strong>  $@item.Product.Price<br />
+                                <strong>Quantity:</strong> @item.Quantity<br />
+                                <strong> Date Created: </strong>@item.DateCreated<br />
+
+                            </p>
+
+                            <form asp-action="RemoveFromCart" asp-controller="Produits" method="post">
+                                <input type="hidden" name="productId" value="@item.ProductID" />
+                                <button type="submit" class="btn btn-danger" style="font-size: 0.8rem;">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No items in the shopping cart</p>
+        }
+    </div>
+}

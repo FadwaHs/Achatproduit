@@ -36,6 +36,44 @@ namespace AchatProduit.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("AchatProduit.Models.LignePanier", b =>
+                {
+                    b.Property<int>("LignePanierID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("PanierID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("LignePanierID");
+
+                    b.HasIndex("PanierID");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("LignePaniers");
+                });
+
+            modelBuilder.Entity("AchatProduit.Models.Panier", b =>
+                {
+                    b.Property<int>("PanierID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PanierID");
+
+                    b.ToTable("Paniers");
+                });
+
             modelBuilder.Entity("AchatProduit.Models.Produit", b =>
                 {
                     b.Property<int>("ProductID")
@@ -72,6 +110,21 @@ namespace AchatProduit.Migrations
                     b.ToTable("Produits");
                 });
 
+            modelBuilder.Entity("AchatProduit.Models.LignePanier", b =>
+                {
+                    b.HasOne("AchatProduit.Models.Panier", null)
+                        .WithMany("Items")
+                        .HasForeignKey("PanierID");
+
+                    b.HasOne("AchatProduit.Models.Produit", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("AchatProduit.Models.Produit", b =>
                 {
                     b.HasOne("AchatProduit.Models.Categorie", "Categorie")
@@ -84,6 +137,11 @@ namespace AchatProduit.Migrations
             modelBuilder.Entity("AchatProduit.Models.Categorie", b =>
                 {
                     b.Navigation("Produits");
+                });
+
+            modelBuilder.Entity("AchatProduit.Models.Panier", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

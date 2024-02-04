@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AchatProduit.Data;
 using AchatProduit.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AchatProduit.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
